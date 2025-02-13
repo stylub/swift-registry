@@ -5,6 +5,6 @@ data class BankCreateRequest(
     val bankName: String,
     val countryISO2: String,
     val countryName: String,
-    val isHeadquarter: Boolean,
+    val headquarter: Boolean,
     val swiftCode: String
 )

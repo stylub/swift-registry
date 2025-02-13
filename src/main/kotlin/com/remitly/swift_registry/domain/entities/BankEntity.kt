@@ -20,6 +20,6 @@ data class BankEntity(
     val isHeadquarter : Boolean,
 
     @ManyToOne(cascade = [CascadeType.DETACH])
-    @JoinColumn(name = "hq_swift_code", insertable = false, updatable = false)
+    @JoinColumn(name = "hq_swift_code")
     val hq : BankEntity?
 )

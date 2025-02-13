@@ -19,12 +19,12 @@ fun BankEntity.toBankDto(branches: List<BankEntity>? = null): BankDto {
     )
 }
 
-fun BankCreateRequest.toBankEntity(countryEntity: CountryEntity, hq: BankEntity? = null) = BankEntity(
+fun BankCreateRequest.toBankEntity(countryEntity: CountryEntity, hq: BankEntity?) = BankEntity(
     swiftCode = this.swiftCode,
     address = this.address,
     bankName = this.bankName,
     countryEntity = countryEntity,
-    isHeadquarter = this.isHeadquarter,
+    isHeadquarter = this.headquarter,
     hq = hq
 )
 

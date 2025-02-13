@@ -14,6 +14,7 @@ class BankControllers(private val bankService : BankService) {
 
     @PostMapping(path=["/v1/swift-codes"])
     fun createBank(@RequestBody bankCreateRequest: BankCreateRequest) : ResponseEntity<BankDto>{
+        println("Received BankCreateRequest: $bankCreateRequest")
         val createdBank = bankService.save(bankCreateRequest)
         return ResponseEntity(createdBank,HttpStatus.CREATED)
     }
