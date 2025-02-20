@@ -21,5 +21,5 @@ data class BankEntity(
 
     @ManyToOne(cascade = [CascadeType.DETACH])
     @JoinColumn(name = "hq_swift_code")
-    val hq : BankEntity?
+    var hq : BankEntity?
 )

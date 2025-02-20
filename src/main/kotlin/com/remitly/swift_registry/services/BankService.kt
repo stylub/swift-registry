@@ -11,32 +11,49 @@ import com.remitly.swift_registry.toBankDto
 import com.remitly.swift_registry.toBankEntity
 import org.apache.coyote.BadRequestException
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class BankService(
     private val bankRepository: BankRepository,
     private val countryService: CountryService
 ) {
+
+    @Transactional
     fun save(request: BankCreateRequest): BankDto {
         val countryEntity = countryService.findOrCreateCountry(
             request.countryISO2,
             request.countryName
         )
+        validateBank(request)
 
-        val hq = resolveHeadquarterEntity(request)
+        val bankEntity : BankEntity
+        val savedEntity : BankEntity
 
-        val bankEntity = request.toBankEntity(countryEntity, hq)
-        return bankRepository.save(bankEntity).toBankDto()
+        if(request.headquarter){
+            bankEntity = request.toBankEntity(countryEntity, hq = null)
+            savedEntity = bankRepository.save(bankEntity)
+
+            val prefix = request.swiftCode.substring(0, 8)
+            bankRepository.updateBranchesHQ(savedEntity, "$prefix%")
+        }else{
+            val hq = linkBranchToExistingHQ(request)
+            bankEntity = request.toBankEntity(countryEntity, hq = hq)
+            savedEntity = bankRepository.save(bankEntity)
+        }
+        return savedEntity.toBankDto()
     }
 
-    private fun resolveHeadquarterEntity(request: BankCreateRequest): BankEntity? {
-        if (request.headquarter) {
-            return null
+    private fun validateBank(bank: BankCreateRequest) {
+        val isHqFromSwift = bank.swiftCode.endsWith("XXX")
+        if (bank.headquarter != isHqFromSwift) {
+            throw IllegalArgumentException("isHeadquarter does not match SWIFT code suffix")
         }
-        val hqSwiftCode = deriveHqSwiftCode(request.swiftCode)
-        return bankRepository.findByIdOrNull(hqSwiftCode)
-            ?: throw BadRequestException(
-                "Headquarter bank not found for branch bank with SWIFT code: ${request.swiftCode}"
-            )
+    }
+
+    private fun linkBranchToExistingHQ(branch: BankCreateRequest): BankEntity? {
+        val prefix = branch.swiftCode.substring(0, 8)
+        val hqSwift = "${prefix}XXX"
+        return bankRepository.findByIdOrNull(hqSwift)
     }
 }
