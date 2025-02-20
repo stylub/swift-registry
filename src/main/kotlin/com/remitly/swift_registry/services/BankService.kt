@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import com.remitly.swift_registry.toBankDto
 import com.remitly.swift_registry.toBankEntity
 import org.apache.coyote.BadRequestException
+import org.springframework.data.repository.findByIdOrNull
 
 @Service
 class BankService(
@@ -22,20 +23,20 @@ class BankService(
             request.countryName
         )
 
-        var hq: BankEntity? = null
-        if (!request.headquarter) {
-            val hqSwiftCode = deriveHqSwiftCode(request.swiftCode)
-            hq = bankRepository.findById(hqSwiftCode)
-                .orElse(null)
-                ?.takeIf { it.isHeadquarter }
+        val hq = resolveHeadquarterEntity(request)
 
-            if (hq == null) {
-                throw BadRequestException("Headquarter bank not found for branch bank with SWIFT code: ${request.swiftCode}")
-            }
-        }
-
-        val bankEntity = request.toBankEntity(countryEntity,hq)
-
+        val bankEntity = request.toBankEntity(countryEntity, hq)
         return bankRepository.save(bankEntity).toBankDto()
+    }
+
+    private fun resolveHeadquarterEntity(request: BankCreateRequest): BankEntity? {
+        if (request.headquarter) {
+            return null
+        }
+        val hqSwiftCode = deriveHqSwiftCode(request.swiftCode)
+        return bankRepository.findByIdOrNull(hqSwiftCode)
+            ?: throw BadRequestException(
+                "Headquarter bank not found for branch bank with SWIFT code: ${request.swiftCode}"
+            )
     }
 }
