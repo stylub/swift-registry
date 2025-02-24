@@ -1,6 +1,4 @@
 package com.remitly.swift_registry.services
-
-import com.remitly.swift_registry.deriveHqSwiftCode
 import com.remitly.swift_registry.domain.dto.BankCreateRequest
 import com.remitly.swift_registry.domain.dto.BankDto
 import com.remitly.swift_registry.domain.entities.BankEntity
@@ -42,6 +40,10 @@ class BankService(
             savedEntity = bankRepository.save(bankEntity)
         }
         return savedEntity.toBankDto()
+    }
+
+    fun getOneBySwiftCode(swiftCode : String) : BankDto {
+
     }
 
     private fun validateBank(bank: BankCreateRequest) {

@@ -5,7 +5,7 @@ import com.remitly.swift_registry.domain.dto.BankDto
 import com.remitly.swift_registry.domain.entities.BankEntity
 import com.remitly.swift_registry.domain.entities.CountryEntity
 
-fun BankEntity.toBankDto(branches: List<BankEntity>? = null): BankDto {
+fun BankEntity.toBankDto(): BankDto {
     return BankDto(
         address = this.address,
         bankName = this.bankName,
@@ -13,8 +13,8 @@ fun BankEntity.toBankDto(branches: List<BankEntity>? = null): BankDto {
         countryName = this.countryEntity.countryName,
         isHeadquarter = this.isHeadquarter,
         swiftCode = this.swiftCode,
-        branches = branches?.map { branchEntity ->
-            branchEntity.toBankDto(branches = null)
+        branches = this.branches.takeIf { it.isNotEmpty() }?.map { branchEntity ->
+            branchEntity.toBankDto()
         }
     )
 }

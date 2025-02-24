@@ -1,10 +1,6 @@
 package com.remitly.swift_registry.domain.entities
 
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 
 @Entity
 data class BankEntity(
@@ -21,5 +17,8 @@ data class BankEntity(
 
     @ManyToOne(cascade = [CascadeType.DETACH])
     @JoinColumn(name = "hq_swift_code")
-    var hq : BankEntity?
+    var hq : BankEntity?,
+
+    @OneToMany(mappedBy = "hq", fetch = FetchType.LAZY)
+    val branches: List<BankEntity> = emptyList()
 )
