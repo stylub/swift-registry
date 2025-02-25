@@ -42,10 +42,6 @@ class BankService(
         return savedEntity.toBankDto()
     }
 
-    fun getOneBySwiftCode(swiftCode : String) : BankDto {
-
-    }
-
     private fun validateBank(bank: BankCreateRequest) {
         val isHqFromSwift = bank.swiftCode.endsWith("XXX")
         if (bank.headquarter != isHqFromSwift) {
@@ -57,5 +53,11 @@ class BankService(
         val prefix = branch.swiftCode.substring(0, 8)
         val hqSwift = "${prefix}XXX"
         return bankRepository.findByIdOrNull(hqSwift)
+    }
+
+
+
+    fun getOneBySwiftCode(swiftCode : String) : BankEntity? {
+        return bankRepository.findByIdOrNull(swiftCode)
     }
 }

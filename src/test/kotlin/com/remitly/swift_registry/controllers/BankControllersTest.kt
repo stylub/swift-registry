@@ -3,8 +3,6 @@ package com.remitly.swift_registry.controllers
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import com.remitly.swift_registry.domain.dto.BankDto
-import com.remitly.swift_registry.domain.entities.BankEntity
-import com.remitly.swift_registry.domain.entities.CountryEntity
 import com.remitly.swift_registry.services.BankService
 import com.remitly.swift_registry.testBankCreateRequestA
 import io.mockk.every
