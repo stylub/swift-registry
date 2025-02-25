@@ -1,5 +1,7 @@
 package com.remitly.swift_registry.domain.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
 data class BankDto(
     val address: String,
     val bankName: String,
@@ -7,5 +9,6 @@ data class BankDto(
     val countryName: String,
     val isHeadquarter: Boolean,
     val swiftCode: String,
-    val branches: List<BankBranchDto>
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val branches: List<BankBranchDto>?
 )

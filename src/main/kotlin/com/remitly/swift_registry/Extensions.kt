@@ -3,6 +3,7 @@ package com.remitly.swift_registry
 import com.remitly.swift_registry.domain.dto.BankBranchDto
 import com.remitly.swift_registry.domain.dto.BankCreateRequest
 import com.remitly.swift_registry.domain.dto.BankDto
+import com.remitly.swift_registry.domain.dto.CountryDto
 import com.remitly.swift_registry.domain.entities.BankEntity
 import com.remitly.swift_registry.domain.entities.CountryEntity
 
@@ -14,7 +15,11 @@ fun BankEntity.toBankDto(): BankDto {
         countryName = this.countryEntity.countryName,
         isHeadquarter = this.isHeadquarter,
         swiftCode = this.swiftCode,
-        branches = this.branches.map { it.toBankBranchDto() }
+        branches = if (this.isHeadquarter) {
+            this.branches?.map { it.toBankBranchDto() }
+        } else {
+            null
+        }
     )
 }
 
@@ -36,13 +41,13 @@ fun BankCreateRequest.toBankEntity(countryEntity: CountryEntity, hq: BankEntity?
     countryEntity = countryEntity,
     isHeadquarter = this.headquarter,
     hq = hq,
+    branches = null
 )
 
-fun BankDto.toBankEntity(countryEntity: CountryEntity, hq: BankEntity? = null) = BankEntity(
-    swiftCode = this.swiftCode,
-    address = this.address,
-    bankName = this.bankName,
-    countryEntity = countryEntity,
-    isHeadquarter = this.isHeadquarter,
-    hq = hq,
-)
+fun CountryEntity.toCountryDto() : CountryDto {
+    return CountryDto(
+        countryISO2 = this.countryISO2,
+        countryName = this.countryName,
+        swiftCodes = this.swiftCodes.map { it.toBankBranchDto() },
+    )
+}

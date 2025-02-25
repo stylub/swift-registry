@@ -27,4 +27,8 @@ class CountryService(private val countryRepository: CountryRepository) {
 
         return countryEntity
     }
+
+    fun get(countryISO2: String) : CountryEntity? {
+        return countryRepository.findByIdOrNull(countryISO2)
+    }
 }

@@ -20,5 +20,5 @@ data class BankEntity(
     var hq : BankEntity?,
 
     @OneToMany(mappedBy = "hq", fetch = FetchType.LAZY)
-    val branches: List<BankEntity> = emptyList()
+    val branches: List<BankEntity>?
 )
