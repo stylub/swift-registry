@@ -1,8 +1,6 @@
 package com.remitly.swift_registry.controllers
 
-import com.remitly.swift_registry.domain.dto.BankDto
 import com.remitly.swift_registry.domain.dto.CountryDto
-import com.remitly.swift_registry.services.BankService
 import com.remitly.swift_registry.services.CountryService
 import com.remitly.swift_registry.toCountryDto
 import org.springframework.http.HttpStatus

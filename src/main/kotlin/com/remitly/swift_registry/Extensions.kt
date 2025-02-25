@@ -39,7 +39,7 @@ fun BankCreateRequest.toBankEntity(countryEntity: CountryEntity, hq: BankEntity?
     address = this.address,
     bankName = this.bankName,
     countryEntity = countryEntity,
-    isHeadquarter = this.headquarter,
+    isHeadquarter = this.isHeadquarter,
     hq = hq,
     branches = null
 )

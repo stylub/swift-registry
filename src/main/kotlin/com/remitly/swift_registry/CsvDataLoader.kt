@@ -28,7 +28,7 @@ class CsvDataLoader(
                 address = row.address,
                 countryISO2 = row.countryIso2,
                 countryName = row.countryName,
-                headquarter = true
+                isHeadquarter = true
             )
             addBank(hq)
         }
@@ -40,7 +40,7 @@ class CsvDataLoader(
                 address = row.address,
                 countryISO2 = row.countryIso2,
                 countryName = row.countryName,
-                headquarter = false
+                isHeadquarter = false
             )
             addBank(branch)
         }

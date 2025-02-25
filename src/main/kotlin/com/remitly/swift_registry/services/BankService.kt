@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service
 
 import com.remitly.swift_registry.toBankDto
 import com.remitly.swift_registry.toBankEntity
-import org.apache.coyote.BadRequestException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,7 +27,7 @@ class BankService(
         val bankEntity : BankEntity
         val savedEntity : BankEntity
 
-        if(request.headquarter){
+        if(request.isHeadquarter){
             bankEntity = request.toBankEntity(countryEntity, hq = null)
             savedEntity = bankRepository.save(bankEntity)
 
@@ -44,7 +43,7 @@ class BankService(
 
     private fun validateBank(bank: BankCreateRequest) {
         val isHqFromSwift = bank.swiftCode.endsWith("XXX")
-        if (bank.headquarter != isHqFromSwift) {
+        if (bank.isHeadquarter != isHqFromSwift) {
             throw IllegalArgumentException("isHeadquarter does not match SWIFT code suffix")
         }
     }
@@ -55,9 +54,23 @@ class BankService(
         return bankRepository.findByIdOrNull(hqSwift)
     }
 
-
-
     fun getOneBySwiftCode(swiftCode : String) : BankEntity? {
         return bankRepository.findByIdOrNull(swiftCode)
+    }
+
+    @Transactional
+    fun delete(swiftCode: String) {
+        val bank = bankRepository.findById(swiftCode).orElseThrow {
+            throw NoSuchElementException("Bank with SWIFT code $swiftCode not found")
+        }
+
+        if (bank.isHeadquarter) {
+            bank.branches?.forEach { branch ->
+                branch.hq = null
+                bankRepository.save(branch)
+            }
+        }
+
+        bankRepository.delete(bank)
     }
 }

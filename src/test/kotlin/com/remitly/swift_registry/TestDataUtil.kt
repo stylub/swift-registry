@@ -8,7 +8,7 @@ fun testBankCreateRequestA(swiftCode : String) : BankCreateRequest{
         bankName = "GlobalBank HQ",
         countryISO2 = "US",
         countryName = "United States",
-        headquarter = true,
+        isHeadquarter = true,
         swiftCode = swiftCode
     )
 }

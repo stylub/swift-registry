@@ -25,4 +25,10 @@ class BankControllers(private val bankService : BankService) {
             ResponseEntity(it,HttpStatus.OK)
         } ?: ResponseEntity(HttpStatus.NOT_FOUND)
     }
+
+    @DeleteMapping(path = ["/{swift-code}"])
+    fun deleteBank(@PathVariable("swift-code") swiftCode: String): ResponseEntity<Unit> {
+        bankService.delete(swiftCode)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
+    }
 }
