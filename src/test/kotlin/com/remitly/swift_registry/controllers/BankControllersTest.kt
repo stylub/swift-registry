@@ -29,7 +29,6 @@ private const val BASE_URL = "/v1/swift-codes"
 @AutoConfigureMockMvc
 class BankControllersTest @Autowired constructor(
     private val mockMvc: MockMvc,
-    @MockkBean private val countryService: CountryService,
     @MockkBean private val  bankService: BankService,
 ){
 
