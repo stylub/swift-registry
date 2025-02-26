@@ -26,19 +26,12 @@ class CountryControllersTest @Autowired constructor(
     private val mockMvc: MockMvc,
     @MockkBean private val countryService: CountryService,
 ){
-    private val objectMapper = JsonMapper.builder()
-        .addModule(KotlinModule.Builder().build())
-        .configure(MapperFeature.USE_STD_BEAN_NAMING, true)
-        .build()
-
     @Test
     fun `getBanksByCountry returns 200 with empty banks list`() {
-        // Given
         val countryISO2 = "FR"
         val countryEntity = CountryEntity(countryISO2, "France", emptyList())
         every { countryService.get(countryISO2) } returns countryEntity
 
-        // When/Then
         mockMvc.get("$BASE_URL/$countryISO2") {
             accept = MediaType.APPLICATION_JSON
         }.andExpect {
@@ -50,11 +43,9 @@ class CountryControllersTest @Autowired constructor(
 
     @Test
     fun `getBanksByCountry returns 404 for non-existent country`() {
-        // Given
         val invalidISO2 = "XX"
         every { countryService.get(invalidISO2) } returns null
 
-        // When/Then
         mockMvc.get("$BASE_URL/$invalidISO2") {
             accept = MediaType.APPLICATION_JSON
         }.andExpect {
