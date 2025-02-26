@@ -1,5 +1,6 @@
 package com.remitly.swift_registry.controllers
 
+import com.remitly.swift_registry.domain.dto.ApiResponse
 import com.remitly.swift_registry.domain.dto.BankCreateRequest
 import com.remitly.swift_registry.domain.dto.BankDto
 import com.remitly.swift_registry.services.BankService
@@ -13,9 +14,19 @@ import org.springframework.web.bind.annotation.*
 class BankControllers(private val bankService : BankService) {
 
     @PostMapping
-    fun createBank(@RequestBody bankCreateRequest: BankCreateRequest) : ResponseEntity<BankDto>{
-        val createdBank = bankService.save(bankCreateRequest)
-        return ResponseEntity(createdBank,HttpStatus.CREATED)
+    fun createBank(@RequestBody bankCreateRequest: BankCreateRequest): ResponseEntity<ApiResponse> {
+        try {
+            bankService.save(bankCreateRequest)
+            return ResponseEntity(
+                ApiResponse("Bank created successfully"),
+                HttpStatus.CREATED
+            )
+        } catch (e: Exception) {
+            return ResponseEntity(
+                ApiResponse("Error: ${e.message}"),
+                HttpStatus.BAD_REQUEST
+            )
+        }
     }
 
     @GetMapping(path = ["/{swift-code}"])
@@ -27,8 +38,18 @@ class BankControllers(private val bankService : BankService) {
     }
 
     @DeleteMapping(path = ["/{swift-code}"])
-    fun deleteBank(@PathVariable("swift-code") swiftCode: String): ResponseEntity<Unit> {
-        bankService.delete(swiftCode)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+    fun deleteBank(@PathVariable("swift-code") swiftCode: String): ResponseEntity<ApiResponse> {
+        try {
+            bankService.delete(swiftCode)
+            return ResponseEntity(
+                ApiResponse("Bank deleted successfully"),
+                HttpStatus.OK
+            )
+        } catch (e: Exception) {
+            return ResponseEntity(
+                ApiResponse("Error: ${e.message}"),
+                HttpStatus.BAD_REQUEST
+            )
+        }
     }
 }

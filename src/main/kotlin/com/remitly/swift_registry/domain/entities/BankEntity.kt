@@ -3,6 +3,7 @@ package com.remitly.swift_registry.domain.entities
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "Bank")
 data class BankEntity(
     @Id
     val swiftCode : String,

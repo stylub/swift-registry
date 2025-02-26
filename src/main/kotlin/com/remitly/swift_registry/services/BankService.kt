@@ -17,7 +17,7 @@ class BankService(
 ) {
 
     @Transactional
-    fun save(request: BankCreateRequest): BankDto {
+    fun save(request: BankCreateRequest): BankEntity {
         val countryEntity = countryService.findOrCreateCountry(
             request.countryISO2,
             request.countryName
@@ -38,7 +38,7 @@ class BankService(
             bankEntity = request.toBankEntity(countryEntity, hq = hq)
             savedEntity = bankRepository.save(bankEntity)
         }
-        return savedEntity.toBankDto()
+        return savedEntity
     }
 
     private fun validateBank(bank: BankCreateRequest) {

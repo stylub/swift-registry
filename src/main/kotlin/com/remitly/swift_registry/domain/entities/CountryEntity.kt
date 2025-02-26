@@ -1,11 +1,9 @@
 package com.remitly.swift_registry.domain.entities
 
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
+import jakarta.persistence.*
 
 @Entity
+@Table(name = "Country")
 data class CountryEntity(
     @Id
     val countryISO2 : String,
