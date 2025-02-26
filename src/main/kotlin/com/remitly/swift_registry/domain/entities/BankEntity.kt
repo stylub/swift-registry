@@ -6,20 +6,20 @@ import jakarta.persistence.*
 @Table(name = "Bank")
 data class BankEntity(
     @Id
-    val swiftCode : String,
-    val address : String,
-    val bankName : String,
+    val swiftCode: String,
+    val address: String,
+    val bankName: String,
 
     @ManyToOne
     @JoinColumn(name="countryISO2")
-    val countryEntity : CountryEntity,
+    val countryEntity: CountryEntity,
 
-    val isHeadquarter : Boolean,
+    val isHeadquarter: Boolean,
 
     @ManyToOne(cascade = [CascadeType.DETACH])
     @JoinColumn(name = "hq_swift_code")
-    var hq : BankEntity?,
+    var hq: BankEntity?,
 
     @OneToMany(mappedBy = "hq", fetch = FetchType.LAZY)
-    val branches: List<BankEntity>?
+    val branches: List<BankEntity>? = null
 )

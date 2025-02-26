@@ -5,11 +5,13 @@ import com.remitly.swift_registry.domain.dto.BankCreateRequest
 import com.remitly.swift_registry.services.BankService
 import org.apache.coyote.BadRequestException
 import org.springframework.boot.CommandLineRunner
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import java.io.InputStreamReader
 
 @Component
+@ConditionalOnProperty(name = ["csv.loader.enabled"], havingValue = "true", matchIfMissing = true)
 class CsvDataLoader(
     private val bankService: BankService
 ) : CommandLineRunner {
