@@ -1,8 +1,6 @@
 package com.remitly.swift_registry.services
 
-import com.remitly.swift_registry.domain.dto.BankCreateRequest
 import com.remitly.swift_registry.domain.entities.BankEntity
-import com.remitly.swift_registry.domain.entities.CountryEntity
 import com.remitly.swift_registry.repositories.BankRepository
 import com.remitly.swift_registry.repositories.CountryRepository
 import com.remitly.swift_registry.testBankCreateRequestBranchA
@@ -14,8 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.post
+import org.junit.jupiter.api.assertThrows
 
 @SpringBootTest
 @Transactional
@@ -65,26 +62,57 @@ class BankServiceTest @Autowired constructor(
         assertThat(recalledBank).isNotNull()
         assertThat(recalledBank!!.hq).isEqualTo(savedHQ)
     }
-//    @Test
-//    fun `test creating new bank where SWIFT does not match isHeadquarter`() {
-//        mockMvc.post("/v1/swift-codes") {
-//            contentType = MediaType.APPLICATION_JSON
-//            content = objectMapper.writeValueAsString(
-//                testBankCreateRequestBranchA("GLOBUSXXXXX")
-//            )
-//        }.andExpect {
-//            status { isBadRequest() }
-//            jsonPath("$.message") { value("Error: isHeadquarter does not match SWIFT code suffix") }
-//        }
-//        mockMvc.post("/v1/swift-codes") {
-//            contentType = MediaType.APPLICATION_JSON
-//            content = objectMapper.writeValueAsString(
-//                testBankCreateRequestHQA("GLOBUSXX123")
-//            )
-//        }.andExpect {
-//            status { isBadRequest() }
-//            jsonPath("$.message") { value("Error: isHeadquarter does not match SWIFT code suffix") }
-//        }
-//    }
 
+    @Test
+    fun `save throws error when isHeadquarter true but SWIFT code doesn't end with XXXX`() {
+        val invalidRequest = testBankCreateRequestHQA("GLOBUSXX123")
+
+        val exception = assertThrows<IllegalArgumentException> {
+            underTest.save(invalidRequest)
+        }
+        assertThat(exception.message).isEqualTo(
+            "isHeadquarter does not match SWIFT code suffix"
+        )
+    }
+
+    @Test
+    fun `save throws error when isHeadquarter false but SWIFT code ends with XXXX`() {
+        val invalidRequest = testBankCreateRequestBranchA("GLOBUSXXXX")
+
+        val exception = assertThrows<IllegalArgumentException> {
+            underTest.save(invalidRequest)
+        }
+
+        assertThat(exception.message).isEqualTo(
+            "isHeadquarter does not match SWIFT code suffix"
+        )
+    }
+
+    @Test
+    fun `getOneBySwiftCode returns single correct bank`(){
+        val swiftCode = "GLOBUSXXXX"
+        underTest.save(testBankCreateRequestHQA("GLOBUSXXXX"))
+
+        val recalledBank = underTest.getOneBySwiftCode(swiftCode)
+
+        assertThat(recalledBank).isNotNull()
+        assertThat(recalledBank!!.swiftCode).isEqualTo("GLOBUSXXXX")
+        assertThat(recalledBank.bankName).isEqualTo("GlobalBank HQ")
+        assertThat(recalledBank.isHeadquarter).isTrue()
+        assertThat(recalledBank.countryEntity.countryISO2).isEqualTo("US")
+        assertThat(recalledBank.hq).isNull()
+    }
+
+    @Test
+    fun `delete removes bank from database`() {
+        val swiftCode = "GLOBUSXXXX"
+        val savedBank = underTest.save(testBankCreateRequestHQA(swiftCode))
+
+        underTest.delete(swiftCode)
+
+        val recalledBank = bankRepository.findByIdOrNull(swiftCode)
+
+        assertThat(recalledBank).isNull()
+
+    }
 }
